@@ -11388,5 +11388,8 @@ a.dark{
   color: red;
 }
 
-
+hr{
+  background: linear-gradient(to right, hsl(180, 10%, 80%) 20%, hsl(180, 10%, 60%) 50%,hsl(180, 10%, 80%) 80% );
+  height: 2px;
+}
 /*# sourceMappingURL=bulma.css.map */

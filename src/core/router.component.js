@@ -8,7 +8,7 @@ export class RouterComponent extends HTMLElement {
         super();
         this.routes = [
             { path: '/', element: 'home-page' , description: "Home"},
-            //{ path: '/add-page', element: 'add-page' , description: "Aggiungi" },
+            { path: '/prova', element: 'prova-page' , description: "Prova" },
             //{ path: '/list-page' , element: 'list-page' , description: "Lista"},
             //{ path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
 
@@ -50,7 +50,7 @@ export class RouterComponent extends HTMLElement {
                 setTimeout(() => {
                     this.setListenerToActiveRoutes();
                 }, 0);
-                document.title = 'Spesa - ' + route.description;
+                document.title = 'Galleria - ' + route.description;
                 if (pushState) {
                     history.pushState({}, '', route.path);
                 }

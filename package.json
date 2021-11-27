@@ -4,15 +4,19 @@
   "description": "Progetto esame segnali e misure",
   "main": "index.js",
   "dependencies": {
+    "@webcomponents/webcomponentsjs": "^2.6.0",
+    "bufferutil": "^4.0.5",
+    "chart.js": "^3.6.0",
     "firebase": "^9.5.0",
-    "lit-element": "^3.0.2"
-    
+    "lit-element": "^3.0.2",
+    "utf-8-validate": "^5.0.7"
   },
   "devDependencies": {
     "concurrently": "^6.4.0",
     "rollup": "^2.60.1",
     "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-node-resolve": "^5.2.0"},
+    "rollup-plugin-node-resolve": "^5.2.0"
+  },
   "scripts": {
     "start": "./node_modules/.bin/concurrently \"npm run watch\" \"npm run serve\"",
     "watch": "./node_modules/.bin/rollup -c -w",
