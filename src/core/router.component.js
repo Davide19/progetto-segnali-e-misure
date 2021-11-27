@@ -1,7 +1,5 @@
 import '../pages/home.page';
-import '../pages/list/list-page';
-import '../pages/add/add-page';
-import '../pages/remove/remove-page';
+
 
 
 export class RouterComponent extends HTMLElement {
@@ -10,9 +8,9 @@ export class RouterComponent extends HTMLElement {
         super();
         this.routes = [
             { path: '/', element: 'home-page' , description: "Home"},
-            { path: '/add-page', element: 'add-page' , description: "Aggiungi" },
-            { path: '/list-page' , element: 'list-page' , description: "Lista"},
-            { path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
+            //{ path: '/add-page', element: 'add-page' , description: "Aggiungi" },
+            //{ path: '/list-page' , element: 'list-page' , description: "Lista"},
+            //{ path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
 
         ];
 
