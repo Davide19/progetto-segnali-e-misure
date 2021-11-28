@@ -3679,6 +3679,160 @@
 
     }
 
+    class HomePage extends NavElement {
+        constructor() {
+            super();
+        }
+        
+        render() {
+            return p` 
+            <br>
+            <div class = " columns is-centered is-full ">
+                <div class = " column is-11 ">
+                    <h1  class = " title is-1 has-text-centered has-text-dark is-italic has-text-weight-bold ">GESTIONE GALLERIA</h1>
+                </div> 
+            </div>
+            <br>
+            <div class = " columns  is-centered is-full ">
+                <div class = " column is-3 ">
+                    <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">STATISTICHE</h1>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-11 ">
+                            <clock-component></clock-component>
+                        </div>
+                    </div>
+                    <hr> 
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark">Auto in questo momento</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark">2</h1>
+                        </div>
+                    </div>
+                    <hr>                    
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark">tasso di cooupazione</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark">2</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark  ">tempo di percorrenza</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark  ">2</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark   ">limite di velocità</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark   ">2</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark   ">lunghezza</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark  ">2</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark  ">tasso di occupazione medio periodo</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark  ">3</h1>
+                        </div>
+                    </div>
+                    <hr> 
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-5 ">
+                            <button route = "/chart" class="button is-dark is-normal">CONFERMA</button>
+                        </div>
+                    </div>
+                </div> 
+                <div class = " column is-9 ">
+                    <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-10 " style="width:70vw">
+                            <chart-component></chart-component>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        `;
+        }
+             
+    }
+
+
+    customElements.define('home-page', HomePage);
+
+    class Clock extends NavElement {
+        
+        constructor() {
+            super();
+            this.attachShadow({mode: 'open'});
+            setInterval(() => {
+              this.date = new Date();
+            }, 1000);      
+          }
+        
+        get date() { return this._date; }
+        set date(v) { this._date = v; this.invalidate(); }
+
+        day(n){
+            const weekday = new Array(7);
+            weekday[0] = "Domenica";
+            weekday[1] = "Lunedì";
+            weekday[2] = "martedì";
+            weekday[3] = "Mercoledì";
+            weekday[4] = "Giovedì";
+            weekday[5] = "venerdì";
+            weekday[6] = "sabato";
+            return weekday[n];
+        }
+        time(n){
+            if(n<10)
+                return "0"+n;
+            else
+                return n;
+        }
+        finalDate(){
+            var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+this.date.getMonth()+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
+            return final;
+        }
+      
+        render() {
+          return p`
+        <h1 style="font-size: 2.5vh; font-weight: 600; color: #363636 !important; text-align:center;">${this.finalDate()}</h1>       
+      `;
+        }
+
+        async invalidate() {
+          if (!this.needsRender) {
+            this.needsRender = true;      
+            this.needsRender = await false;
+            w(this.render(), this.shadowRoot);
+          }
+        }
+    }
+
+
+    customElements.define('clock-component', Clock);
+
     /*!
      * Chart.js v3.6.0
      * https://www.chartjs.org
@@ -16628,40 +16782,53 @@
 
     Chart.register(...registerables);
 
-    class HomePage extends NavElement {
+    class Graph extends NavElement {
         constructor() {
             super();
         }
+
+        
         firstUpdated() {
-            const ctx ='myChart2';    
+            const ctx ='myChart';
+            
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                    datasets: [{
-                        label: '# of Votes',
-                        data: [12, 19, 3, 5, 2, 3],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255,99,132,1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
+                    labels: ["LUNEDI'", "MARTEDI'", "MERCOLEDI'","GIOVEDI'", "VENERDI'", "SABATO", "DOMENICA"],
+                    datasets: [
+                        {
+                            label: "ORE 0:00-5:59",
+                            backgroundColor: 'rgba(75, 192, 192, 0.3)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            data: [3,7,4,2,2,2,2]
+                        },
+                        {
+                            label: "ORE 6:00-11:59",
+                            backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                            borderColor: 'rgba(255,99,132,1)',
+                            borderWidth: 1,
+                            data: [4,3,5,2,2,2,2]
+                        },
+                        {
+                            label: "ORE 12:00-17:59",
+                            backgroundColor: 'rgba(255, 206, 86, 0.3)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 1,
+                            data: [7,2,6,2,2,2,2]
+                        },
+                        {
+                            label: "ORE 18:00-23:59",
+                            backgroundColor: 'rgba(153, 102, 255, 0.3)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1,
+                            data: [4,3,5,2,2,2,3]
+                        },
+                    ]
                 },
                 options: {
-                    responsive: false,
+                    aspectRatio: 1.85,
+                    responsive: true,
                     maintainAspectRatio: true,
                     scales: {
                         y: {                        
@@ -16671,94 +16838,17 @@
                 }
             });
           }
-        render() {
-            return p` 
-            <br>
-            <div class = " columns is-centered is-full ">
-                <div class = " column is-11 ">
-                    <h1  class = " title is-size-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GESTIONE GALLERIA</h1>
-                </div> 
-            </div>
-            <br>
-            <div class = " columns  is-centered is-full ">
-                <div class = " column is-3 ">
-                    <h1  class = " title is-size-3 has-text-centered has-text-dark is-italic has-text-weight-bold ">STATISTICHE</h1>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">Auto in questo momento</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">2</h1>
-                        </div>
-                    </div>
-                    <hr>                    
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">tasso di cooupazione</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">2</h1>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">tempo di percorrenza</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">2</h1>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">limite di velocità</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">2</h1>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">lunghezza</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">2</h1>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-size-5 has-text-left has-text-dark is-italic has-text-weight-bold ">tasso di occupazione medio periodo</h1>
-                        </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-size-5 has-text-centered has-text-dark is-italic has-text-weight-bold ">3</h1>
-                        </div>
-                    </div>
-                    <hr> 
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-5 ">
-                            <button route = "/prova" class="button is-dark">CONFERMA</button>
-                        </div>
-                    </div>
-                </div> 
 
-                <div class = " column is-9 ">
-                    <h1  class = " title is-size-3 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>
-                    <div>
-                        <canvas id="myChart2" style=" background-color:rgb(250,250,250) " width="400" height="400"></canvas>
-                    </div>
-                </div>
-            </div>
-            
+        render() {
+            return p`  
+            <canvas id="myChart"></canvas>
         `;
         }
              
     }
 
 
-    customElements.define('home-page', HomePage);
+    customElements.define('chart-component', Graph);
 
     class RouterComponent extends HTMLElement {
 
@@ -16766,8 +16856,8 @@
             super();
             this.routes = [
                 { path: '/', element: 'home-page' , description: "Home"},
-                { path: '/prova', element: 'prova-page' , description: "Prova" },
-                //{ path: '/list-page' , element: 'list-page' , description: "Lista"},
+                //{ path: '/chart', element: 'chart-component' , description: "grafico" },
+                //{ path: '/clock' , element: 'clock-element' , description: "orologio"},
                 //{ path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
 
             ];

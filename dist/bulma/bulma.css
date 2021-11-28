@@ -1715,7 +1715,8 @@ fieldset[disabled] .button.is-danger.is-inverted.is-outlined {
 }
 
 .button.is-normal {
-  font-size: 1rem;
+  border-radius: 0.75vh;
+  font-size: 1.75vh;
 }
 
 .button.is-medium {
@@ -3107,31 +3108,31 @@ a.tag:hover {
 }
 
 .title.is-1 {
-  font-size: 3rem;
+  font-size: 6vh;
 }
 
 .title.is-2 {
-  font-size: 2.5rem;
+  font-size: 4vh;
 }
 
 .title.is-3 {
-  font-size: 2rem;
+  font-size: 2.5vh;
 }
 
 .title.is-4 {
-  font-size: 1.5rem;
+  font-size: 2vh;
 }
 
 .title.is-5 {
-  font-size: 1.25rem;
+  font-size: 1.5vh;
 }
 
 .title.is-6 {
-  font-size: 1rem;
+  font-size: 1vh;
 }
 
 .title.is-7 {
-  font-size: 0.75rem;
+  font-size: 0.5vh;
 }
 
 .subtitle {
@@ -11390,6 +11391,7 @@ a.dark{
 
 hr{
   background: linear-gradient(to right, hsl(180, 10%, 80%) 20%, hsl(180, 10%, 60%) 50%,hsl(180, 10%, 80%) 80% );
-  height: 2px;
+  height: 0.3vh;
+  margin: 1vh;
 }
 /*# sourceMappingURL=bulma.css.map */
