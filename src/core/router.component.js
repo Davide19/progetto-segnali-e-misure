@@ -1,4 +1,6 @@
-import '../pages/home.page';
+import '../pages/home-page';
+import '../pages/clock-component';
+import '../pages/chart-component';
 
 
 
@@ -8,8 +10,8 @@ export class RouterComponent extends HTMLElement {
         super();
         this.routes = [
             { path: '/', element: 'home-page' , description: "Home"},
-            { path: '/prova', element: 'prova-page' , description: "Prova" },
-            //{ path: '/list-page' , element: 'list-page' , description: "Lista"},
+            //{ path: '/chart', element: 'chart-component' , description: "grafico" },
+            //{ path: '/clock' , element: 'clock-element' , description: "orologio"},
             //{ path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
 
         ];
