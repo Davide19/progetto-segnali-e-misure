@@ -20,11 +20,11 @@ export class Clock extends NavElement {
         const weekday = new Array(7);
         weekday[0] = "Domenica";
         weekday[1] = "Lunedì";
-        weekday[2] = "martedì";
+        weekday[2] = "Martedì";
         weekday[3] = "Mercoledì";
         weekday[4] = "Giovedì";
-        weekday[5] = "venerdì";
-        weekday[6] = "sabato";
+        weekday[5] = "Venerdì";
+        weekday[6] = "Sabato";
         return weekday[n];
     }
     time(n){

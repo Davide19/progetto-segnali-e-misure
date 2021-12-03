@@ -1,6 +1,7 @@
 import '../pages/home-page';
 import '../pages/clock-component';
 import '../pages/chart-component';
+import '../pages/parameters-component';
 
 
 

@@ -1,10 +1,12 @@
-import firebase from "firebase/app"
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 
 export class FirebaseQuery {
 
     constructor() {
-        this.db = firebase.firestore().collection("objects");
+        this.db = firebase.firestore().collection("stats");
 
     }
 
@@ -51,6 +53,15 @@ export class FirebaseQuery {
                 func(data);
             });
     }
+    readGraph(func) {
+        this.db.get()
+            .catch(e => console.log('error in readGraph', e))
+            .then(res => {
+                var data = res.docs[1].data();
+                func(data);
+            });
+    }
+
     deleteOcject(name){
         this.db.doc(name).delete()
         .catch(function(error) {
@@ -59,9 +70,9 @@ export class FirebaseQuery {
     }
     
 
-    listenToChanges(func){
+    listenToChangesGraph(func){
         /*esegue una callback ad ogni cambiamento del documento
         ma ritorna se stessa per poter rimuovere il listener*/
-        return this.db.onSnapshot(data => func(data));
+        return this.db.doc("graph").onSnapshot(data => func(data));
     }
 }
