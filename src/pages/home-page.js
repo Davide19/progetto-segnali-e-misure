@@ -18,7 +18,7 @@ export class HomePage extends NavElement {
             <br>
             <div class = " columns  is-centered is-full ">
                 <div class = " column is-3 ">
-                    <parameters-component></parameters-component>
+                    <stats-component></stats-component>
                 </div> 
                 <div class = " column is-9 ">
                     <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>

@@ -16,7 +16,6 @@ export class Graph extends NavElement {
                
     }
       aggiorna(control) {
-        console.log(this.chartData)
         const ctx ='myChart';
         if(control){
         this.myChart.destroy();

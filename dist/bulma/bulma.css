@@ -3212,29 +3212,36 @@ a.tag:hover {
   padding: 0.25rem 0.5rem;
   text-align: center;
   vertical-align: top;
+  
 }
 
 .input, .textarea, .select select {
   background-color: white;
   border-color: #dbdbdb;
-  border-radius: 4px;
+  border-radius: 0.75vh;
   color: #363636;
+  font-weight: bold;
+  font-size: 1.75vh;
 }
 
 .input::-moz-placeholder, .textarea::-moz-placeholder, .select select::-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
+  color: rgba(54, 54, 54, 1);
+  font-weight: bold;
 }
 
 .input::-webkit-input-placeholder, .textarea::-webkit-input-placeholder, .select select::-webkit-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
+  color: rgba(54, 54, 54, 1);
+  font-weight: bold;
 }
 
 .input:-moz-placeholder, .textarea:-moz-placeholder, .select select:-moz-placeholder {
-  color: rgba(54, 54, 54, 0.3);
+  color: rgba(54, 54, 54, 1);
+  font-weight: bold;
 }
 
 .input:-ms-input-placeholder, .textarea:-ms-input-placeholder, .select select:-ms-input-placeholder {
-  color: rgba(54, 54, 54, 0.3);
+  color: rgba(54, 54, 54, 1);
+  font-weight: bold;
 }
 
 .input:hover, .textarea:hover, .select select:hover, .is-hovered.input, .is-hovered.textarea, .select select.is-hovered {
@@ -11394,4 +11401,5 @@ hr{
   height: 0.3vh;
   margin: 1vh;
 }
+
 /*# sourceMappingURL=bulma.css.map */

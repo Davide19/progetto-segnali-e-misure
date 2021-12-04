@@ -17,14 +17,7 @@ export class Clock extends NavElement {
     set date(v) { this._date = v; this.invalidate(); }
 
     day(n){
-        const weekday = new Array(7);
-        weekday[0] = "Domenica";
-        weekday[1] = "Lunedì";
-        weekday[2] = "Martedì";
-        weekday[3] = "Mercoledì";
-        weekday[4] = "Giovedì";
-        weekday[5] = "Venerdì";
-        weekday[6] = "Sabato";
+        const weekday = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
         return weekday[n];
     }
     time(n){
@@ -34,7 +27,7 @@ export class Clock extends NavElement {
             return n;
     }
     finalDate(){
-        var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+this.date.getMonth()+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
+        var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
         return final;
     }
   

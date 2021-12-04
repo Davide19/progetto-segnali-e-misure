@@ -32036,7 +32036,7 @@
             <br>
             <div class = " columns  is-centered is-full ">
                 <div class = " column is-3 ">
-                    <parameters-component></parameters-component>
+                    <stats-component></stats-component>
                 </div> 
                 <div class = " column is-9 ">
                     <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>
@@ -32070,14 +32070,7 @@
         set date(v) { this._date = v; this.invalidate(); }
 
         day(n){
-            const weekday = new Array(7);
-            weekday[0] = "Domenica";
-            weekday[1] = "Lunedì";
-            weekday[2] = "Martedì";
-            weekday[3] = "Mercoledì";
-            weekday[4] = "Giovedì";
-            weekday[5] = "Venerdì";
-            weekday[6] = "Sabato";
+            const weekday = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
             return weekday[n];
         }
         time(n){
@@ -32087,7 +32080,7 @@
                 return n;
         }
         finalDate(){
-            var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+this.date.getMonth()+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
+            var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
             return final;
         }
       
@@ -45069,11 +45062,7 @@
             this.doc =this.db.doc(name);
         }
 
-        updateQuantity(name, value){
-            this.setName(name);
-            this.doc.update("qta", value)
-            .catch(err => console.log('error in updateQuantity', err));
-        }
+        
         
         uploadItem(name){
             name=name.toLowerCase();
@@ -45108,14 +45097,46 @@
                     func(data);
                 });
         }
+
+        //COMPONENT: graph
+        //legge solamente la collection graph
         readGraph(func) {
-            this.db.get()
+            this.db.doc("graph").get()
                 .catch(e => console.log('error in readGraph', e))
                 .then(res => {
-                    var data = res.docs[1].data();
+                    var data = res.data();
                     func(data);
                 });
         }
+        /*esegue una callback ad ogni cambiamento del documento
+            ma ritorna se stessa per poter rimuovere il listener*/
+        listenToChangesGraph(func){
+            return this.db.doc("graph").onSnapshot(data => func(data));
+        }
+
+        //COMPONENT: parameters
+        //legge solamente la collection basic-parameters
+        readParameters(func) {
+            this.db.doc("basic-parameters").get()
+                .catch(e => console.log('error in readGraph', e))
+                .then(res => {
+                    var data = res.data();
+                    func(data);
+                });
+        }
+
+        updateParameters(name, value){
+            this.db.doc("basic-parameters").update(name, value)
+            .catch(err => console.log('error in updateParameters', err));
+        }
+
+        /*esegue una callback ad ogni cambiamento del documento
+            ma ritorna se stessa per poter rimuovere il listener*/
+        listenToChangesParameters(func){
+            return this.db.doc("basic-parameters").onSnapshot(data => func(data));
+        }
+
+        //COMPONENT: stats
 
         deleteOcject(name){
             this.db.doc(name).delete()
@@ -45125,11 +45146,7 @@
         }
         
 
-        listenToChangesGraph(func){
-            /*esegue una callback ad ogni cambiamento del documento
-            ma ritorna se stessa per poter rimuovere il listener*/
-            return this.db.doc("graph").onSnapshot(data => func(data));
-        }
+        
     }
 
     class Graph extends NavElement {
@@ -45144,7 +45161,6 @@
                    
         }
           aggiorna(control) {
-            console.log(this.chartData);
             const ctx ='myChart';
             if(control){
             this.myChart.destroy();
@@ -45244,14 +45260,31 @@
 
     customElements.define('chart-component', Graph);
 
-    class Parameters extends NavElement {
+    class Stats extends NavElement {
+         
+        static get properties() {
+            return {
+                carsInside: { type: Number },
+                maxCars: { type: Number },
+                occupationRate:{ type: Number },
+                expectedTime:{ type: Number },
+                travelTime:{type: Number}
+            }
+        }
+        
         constructor() {
             super();
-            
+            const carLength=4.6;
+            this.carsInside=0;
+            this.maxCars=0;
+            this.occupationRate=0,
+            this.expectedTime=0,
+            this.travelTime=0;
+            this.firebaseQuery= new FirebaseQuery();
+            this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.maxCars=Math.floor(data.length/carLength), this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));}));
 
         }
 
-        
         
         render() {
             return p`  
@@ -45267,7 +45300,16 @@
                             <h1  class = " title is-3 has-text-left has-text-dark">Auto Attualmente all'Interno</h1>
                         </div>
                         <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark">2</h1>
+                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.carsInside}</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark">Massimo Numero di Auto Possibile</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.maxCars}</h1>
                         </div>
                     </div>
                     <hr>                    
@@ -45276,42 +45318,103 @@
                             <h1  class = " title is-3 has-text-left has-text-dark">Tasso di Occupazione</h1>
                         </div>
                         <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark">2</h1>
+                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.occupationRate}</h1>
                         </div>
                     </div>
                     <hr>
                     <div class = " columns  is-centered is-full ">
                         <div class = " column is-9 ">
-                            <h1  class = " title is-3 has-text-left has-text-dark  ">Tempo Stimato di Percorrenza</h1>
+                            <h1  class = " title is-3 has-text-left has-text-dark  ">Tempo Stimato di Percorrenza [s]</h1>
                         </div>
                         <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark  ">2</h1>
+                            <h1  class = " title is-3 has-text-centered has-text-dark  ">${this.expectedTime}</h1>
                         </div>
                     </div>
                     <hr>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-9 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark  ">Tempo Minimo di Percorrenza [s]</h1>
+                        </div>
+                        <div class = " column is-2 ">
+                            <h1  class = " title is-3 has-text-centered has-text-dark  ">${this.travelTime}</h1>
+                        </div>
+                    </div>
+                    <hr>
+                    <parameters-component></parameters-component>
+        `;
+        }
+             
+    }
+
+
+    customElements.define('stats-component', Stats);
+
+    class Parameters extends NavElement {
+        
+        static get properties() {
+            return {
+                length: { type: Number },
+                speedLimit: { type: Number }
+            }
+        }
+        
+        constructor() {
+            super();
+            this.length=0;
+            this.speedLimit=0;
+            this.firebaseQuery= new FirebaseQuery();
+            this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.length=data.length, this.speedLimit=data.speedLimit;}));
+        }
+
+        updateParameters(){
+            if(document.getElementById("length").value==""|| isNaN(parseInt(document.getElementById("length").value))){
+                document.getElementById("length").classList.toggle("is-danger");
+                if(document.getElementById("speedLimit").value==""|| isNaN(parseInt(document.getElementById("speedLimit").value))){
+                    document.getElementById("speedLimit").classList.toggle("is-danger");
+                }
+            }
+            else {
+                if(document.getElementById("speedLimit").value==""|| isNaN(parseInt(document.getElementById("speedLimit").value))){
+                    document.getElementById("speedLimit").classList.toggle("is-danger");
+                }
+                else {
+                    this.firebaseQuery.updateParameters("length", parseInt(document.getElementById("length").value));
+                    this.firebaseQuery.updateParameters("speedLimit", parseInt(document.getElementById("speedLimit").value));
+                    document.getElementById("length").classList.remove("is-danger");
+                    document.getElementById("speedLimit").classList.remove("is-danger");
+                    document.getElementById("length").value="";
+                    document.getElementById("speedLimit").value="";
+                }
+                
+            }
+        }
+        
+        render() {
+            return p`  
+            
                     <h1  class = " title is-3 has-text-centered has-text-dark is-italic has-text-weight-bold ">PARAMETRI</h1>
                     <hr>
                     <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-3 has-text-left has-text-dark   ">Lunghezza</h1>
+                        <div class = " column is-8 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark   ">Lunghezza [m]</h1>
                         </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark  ">2</h1>
+                        <div class = " column is-3 ">
+                            <input class="input has-text-centered is-dark" id="length" type="text" placeholder=${this.length}>
                         </div>
                     </div>
                     <hr>
                     <div class = " columns  is-centered is-full ">
-                        <div class = " column is-9 ">
-                            <h1  class = " title is-3 has-text-left has-text-dark   ">Limite di Velocità</h1>
+                        <div class = " column is-8 ">
+                            <h1  class = " title is-3 has-text-left has-text-dark ">Limite di Velocità [km/h]</h1>
                         </div>
-                        <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark   ">2</h1>
+                        <div class = " column is-3 ">
+                            <input class="input has-text-centered is-dark" id="speedLimit" type="text" placeholder=${this.speedLimit}>                  
                         </div>
                     </div>
                     <hr> 
                     <div class = " columns  is-centered is-full ">
                         <div class = " column is-5 ">
-                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.readGraph(data =>{console.log(data);})}>CONFERMA</button>
+                            <button class="button is-dark is-normal" @click=${e => this.updateParameters()}>CONFERMA</button>
                         </div>
                     </div>
         `;

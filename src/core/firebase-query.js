@@ -14,11 +14,7 @@ export class FirebaseQuery {
         this.doc =this.db.doc(name)
     }
 
-    updateQuantity(name, value){
-        this.setName(name)
-        this.doc.update("qta", value)
-        .catch(err => console.log('error in updateQuantity', err))
-    }
+    
     
     uploadItem(name){
         name=name.toLowerCase()
@@ -53,14 +49,46 @@ export class FirebaseQuery {
                 func(data);
             });
     }
+
+    //COMPONENT: graph
+    //legge solamente la collection graph
     readGraph(func) {
-        this.db.get()
+        this.db.doc("graph").get()
             .catch(e => console.log('error in readGraph', e))
             .then(res => {
-                var data = res.docs[1].data();
+                var data = res.data();
                 func(data);
             });
     }
+    /*esegue una callback ad ogni cambiamento del documento
+        ma ritorna se stessa per poter rimuovere il listener*/
+    listenToChangesGraph(func){
+        return this.db.doc("graph").onSnapshot(data => func(data));
+    }
+
+    //COMPONENT: parameters
+    //legge solamente la collection basic-parameters
+    readParameters(func) {
+        this.db.doc("basic-parameters").get()
+            .catch(e => console.log('error in readGraph', e))
+            .then(res => {
+                var data = res.data();
+                func(data);
+            });
+    }
+
+    updateParameters(name, value){
+        this.db.doc("basic-parameters").update(name, value)
+        .catch(err => console.log('error in updateParameters', err))
+    }
+
+    /*esegue una callback ad ogni cambiamento del documento
+        ma ritorna se stessa per poter rimuovere il listener*/
+    listenToChangesParameters(func){
+        return this.db.doc("basic-parameters").onSnapshot(data => func(data));
+    }
+
+    //COMPONENT: stats
 
     deleteOcject(name){
         this.db.doc(name).delete()
@@ -70,9 +98,5 @@ export class FirebaseQuery {
     }
     
 
-    listenToChangesGraph(func){
-        /*esegue una callback ad ogni cambiamento del documento
-        ma ritorna se stessa per poter rimuovere il listener*/
-        return this.db.doc("graph").onSnapshot(data => func(data));
-    }
+    
 }
