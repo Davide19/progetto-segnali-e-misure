@@ -32017,7 +32017,6 @@
         createRenderRoot() {
             return this;
         }
-
     }
 
     class Clock extends NavElement {
@@ -45024,6 +45023,7 @@
         constructor() {
             this.db = firebase.firestore().collection("stats");
         }
+
         //FIXME: elimina le due funzioni dopo la fase test
         updateFirst(){
             this.db.doc("basic-parameters").update({ first: firebase.firestore.FieldValue.increment(1) })
@@ -45145,6 +45145,7 @@
                 }            
             }
         }
+
         /*esegue una callback ad ogni cambiamento del documento
             ma ritorna se stessa per poter rimuovere il listener*/
         listenToChangesGraph(func){
@@ -45161,6 +45162,7 @@
                     func(data);
                 });
         }
+        
         //aggiorna il campo (name) della collectiion basic-parameters con value
         updateParameters(name, value){
             this.db.doc("basic-parameters").update(name, value)
@@ -45269,7 +45271,7 @@
                                     Math.round(this.chartData.thu2.total_time/this.chartData.thu2.total_cars),
                                     Math.round(this.chartData.fri2.total_time/this.chartData.fri2.total_cars),
                                     Math.round(this.chartData.sat2.total_time/this.chartData.sat2.total_cars),
-                                    Math.round(this.chartData.sun2.total_time/this.chartData.sun1.total_cars)]
+                                    Math.round(this.chartData.sun2.total_time/this.chartData.sun2.total_cars)]
                         },
                         {
                             label: "ORE 12:00-17:59",
@@ -45282,7 +45284,7 @@
                                     Math.round(this.chartData.thu3.total_time/this.chartData.thu3.total_cars),
                                     Math.round(this.chartData.fri3.total_time/this.chartData.fri3.total_cars),
                                     Math.round(this.chartData.sat3.total_time/this.chartData.sat3.total_cars),
-                                    Math.round(this.chartData.sun3.total_time/this.chartData.sun1.total_cars)]
+                                    Math.round(this.chartData.sun3.total_time/this.chartData.sun3.total_cars)]
                         },
                         {
                             label: "ORE 18:00-23:59",
@@ -45323,8 +45325,6 @@
         `;
         }        
     }
-
-
     customElements.define('chart-component', Graph);
 
     class Stats extends NavElement {
@@ -45378,8 +45378,7 @@
                 }
                 else {
                     this.last=data.last;
-                }
-            
+                }        
         }
 
         //rimuove l'ultima auto (inserito qua per evitare problemi con l'asincronicità delle operazioni sul database)
@@ -45509,8 +45508,7 @@
                     document.getElementById("speedLimit").classList.remove("is-danger");
                     document.getElementById("length").value="";
                     document.getElementById("speedLimit").value="";
-                }
-                
+                }            
             }
         }
         

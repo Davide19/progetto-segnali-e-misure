@@ -49,7 +49,7 @@ export class Graph extends NavElement {
                                 Math.round(this.chartData.thu2.total_time/this.chartData.thu2.total_cars),
                                 Math.round(this.chartData.fri2.total_time/this.chartData.fri2.total_cars),
                                 Math.round(this.chartData.sat2.total_time/this.chartData.sat2.total_cars),
-                                Math.round(this.chartData.sun2.total_time/this.chartData.sun1.total_cars)]
+                                Math.round(this.chartData.sun2.total_time/this.chartData.sun2.total_cars)]
                     },
                     {
                         label: "ORE 12:00-17:59",
@@ -62,7 +62,7 @@ export class Graph extends NavElement {
                                 Math.round(this.chartData.thu3.total_time/this.chartData.thu3.total_cars),
                                 Math.round(this.chartData.fri3.total_time/this.chartData.fri3.total_cars),
                                 Math.round(this.chartData.sat3.total_time/this.chartData.sat3.total_cars),
-                                Math.round(this.chartData.sun3.total_time/this.chartData.sun1.total_cars)]
+                                Math.round(this.chartData.sun3.total_time/this.chartData.sun3.total_cars)]
                     },
                     {
                         label: "ORE 18:00-23:59",
