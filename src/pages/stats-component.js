@@ -27,7 +27,7 @@ export class Stats extends NavElement {
         this.first=0
         this.firebaseQuery= new FirebaseQuery();
         this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.updateProperties(data)}))
-        this.firebaseQuery.deleteCar("0");
+        //this.firebaseQuery.deleteCar("0");
 
     }
     updateProperties(data){
@@ -35,26 +35,34 @@ export class Stats extends NavElement {
         this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));
         this.carsInside=data.last-data.first;
         this.occupationRate=Math.round(this.carsInside/this.maxCars*100)
-        if(this.first!=data.first){
-            var deleted=this.first
-            this.first=data.first;
-            if(this.index==10){
-                this.index=0;
+            if(this.first!=data.first && this.first!=0){
+                var deleted=this.first
+                this.first=data.first;
+                if(this.index==10){
+                    this.index=0;
+                }
+                this.firebaseQuery.readCars(data =>{this.calculateExpectedTime(data,deleted)})            
             }
-            this.firebaseQuery.readCars(data =>{this.calculateExpectedTime(data,deleted)})            
-        }
-        if(this.last!=data.last){
-            this.firebaseQuery.uploadCar(this.last)
-            this.last=data.last;
-        }
+            else{
+                this.first=data.first;
+            }
+            if(this.last!=data.last && this.last!=0){
+                this.firebaseQuery.uploadCar(this.last)
+                this.last=data.last;
+            }
+            else{
+                this.last=data.last;
+            }
+        
     }
 
     calculateExpectedTime(data,deleted){
-        this.firebaseQuery.deleteCar(deleted);        
+        this.firebaseQuery.deleteCar(deleted);
         if(this.index==10){
             this.index=0;
         }
         this.times[this.index]=Math.floor(new Date().getTime()/1000)-data[0].arrival
+        this.firebaseQuery.updateGraph(this.times[this.index])
         this.index=this.index+1;     
         var expectedTime=0
         var n=0
