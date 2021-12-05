@@ -10,21 +10,61 @@ export class Stats extends NavElement {
             maxCars: { type: Number },
             occupationRate:{ type: Number },
             expectedTime:{ type: Number },
-            travelTime:{type: Number}
+            travelTime:{type: Number},
         }
     }
     
     constructor() {
         super();
-        const carLength=4.6;
         this.carsInside=0;
         this.maxCars=0;
         this.occupationRate=0,
         this.expectedTime=0,
+        this.times=[0,0,0,0,0,0,0,0,0,0],
+        this.index=0,
         this.travelTime=0
+        this.last=0
+        this.first=0
         this.firebaseQuery= new FirebaseQuery();
-        this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.maxCars=Math.floor(data.length/carLength), this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6))}))
+        this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.updateProperties(data)}))
+        this.firebaseQuery.deleteCar("0");
 
+    }
+    updateProperties(data){
+        this.maxCars=Math.floor(data.length/4.6);//4.6m lunghezza media di un auto
+        this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));
+        this.carsInside=data.last-data.first;
+        this.occupationRate=Math.round(this.carsInside/this.maxCars*100)
+        if(this.first!=data.first){
+            var deleted=this.first
+            this.first=data.first;
+            if(this.index==10){
+                this.index=0;
+            }
+            this.firebaseQuery.readCars(data =>{this.calculateExpectedTime(data,deleted)})            
+        }
+        if(this.last!=data.last){
+            this.firebaseQuery.uploadCar(this.last)
+            this.last=data.last;
+        }
+    }
+
+    calculateExpectedTime(data,deleted){
+        this.firebaseQuery.deleteCar(deleted);        
+        if(this.index==10){
+            this.index=0;
+        }
+        this.times[this.index]=Math.floor(new Date().getTime()/1000)-data[0].arrival
+        this.index=this.index+1;     
+        var expectedTime=0
+        var n=0
+        for (let i = 0; i < 10; i++) {
+            if(this.times[i]!=0){
+                expectedTime += this.times[i];
+                n++;
+            }
+        }
+        this.expectedTime=Math.round(expectedTime/n);
     }
 
     
@@ -60,7 +100,7 @@ export class Stats extends NavElement {
                             <h1  class = " title is-3 has-text-left has-text-dark">Tasso di Occupazione</h1>
                         </div>
                         <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.occupationRate}</h1>
+                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.occupationRate}%</h1>
                         </div>
                     </div>
                     <hr>
@@ -81,10 +121,19 @@ export class Stats extends NavElement {
                             <h1  class = " title is-3 has-text-centered has-text-dark  ">${this.travelTime}</h1>
                         </div>
                     </div>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-5 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>first</button>
+                        </div>
+                        <div class = " column is-5 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>last</button>
+                        </div>
+                    </div>
                     <hr>
                     <parameters-component></parameters-component>
         `;
     }
+    
          
 }
 

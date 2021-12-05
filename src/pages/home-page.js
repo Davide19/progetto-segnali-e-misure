@@ -1,6 +1,12 @@
 import { html } from 'lit-element';
 import { NavElement } from '../core/nav-element';
 
+import '../pages/home-page';
+import '../pages/clock-component';
+import '../pages/chart-component';
+import '../pages/stats-component';
+import '../pages/parameters-component';
+
 
 export class HomePage extends NavElement {
     constructor() {
@@ -9,12 +15,6 @@ export class HomePage extends NavElement {
     
     render() {
         return html` 
-            <br>
-            <div class = " columns is-centered is-full ">
-                <div class = " column is-11 ">
-                    <h1  class = " title is-1 has-text-centered has-text-dark is-italic has-text-weight-bold ">GESTIONE GALLERIA</h1>
-                </div> 
-            </div>
             <br>
             <div class = " columns  is-centered is-full ">
                 <div class = " column is-3 ">

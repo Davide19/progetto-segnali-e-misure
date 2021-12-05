@@ -32020,42 +32020,6 @@
 
     }
 
-    class HomePage extends NavElement {
-        constructor() {
-            super();
-        }
-        
-        render() {
-            return p` 
-            <br>
-            <div class = " columns is-centered is-full ">
-                <div class = " column is-11 ">
-                    <h1  class = " title is-1 has-text-centered has-text-dark is-italic has-text-weight-bold ">GESTIONE GALLERIA</h1>
-                </div> 
-            </div>
-            <br>
-            <div class = " columns  is-centered is-full ">
-                <div class = " column is-3 ">
-                    <stats-component></stats-component>
-                </div> 
-                <div class = " column is-9 ">
-                    <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-10 " style="width:70vw">
-                            <chart-component></chart-component>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        `;
-        }
-             
-    }
-
-
-    customElements.define('home-page', HomePage);
-
     class Clock extends NavElement {
         
         constructor() {
@@ -45057,45 +45021,24 @@
             this.db = firebase.firestore().collection("stats");
 
         }
-
         setName(name) {
-            this.doc =this.db.doc(name);
-        }
-
-        
-        
-        uploadItem(name){
-            name=name.toLowerCase();
-            this.setName(name);
+            this.doc =this.db.doc(name.toString());
+        }/*
+        uploadCar(name){
+            name=name.toString()
+            this.doc =this.db.doc(name)
             this.doc.set({
-                name: name,
                 qta: "0",
                 uid: "uid"
-            });
+            })
+        }*/
+        updateFirst(){
+            this.db.doc("basic-parameters").update({ first: firebase.firestore.FieldValue.increment(1) })
+            .catch(err => console.log('error in updateFirst', err));
         }
-        
-        //restituisce tutti i documenti del database dentro un array
-        readAll(func) {
-            this.db.get()
-                .catch(e => console.log('error in readAll', e))
-                .then(res => {
-                    var data = [];
-                    res.docs.forEach(doc => {
-                        data.push(doc.data());
-                    });
-                    data.sort(
-                        function (a, b) {
-                            if (a.name < b.name) {
-                                return -1;
-                            }
-                            if (b.name < a.name) {
-                                return 1;
-                            }
-                            return 0;
-                        }
-                    );
-                    func(data);
-                });
+        updateLast(){
+            this.db.doc("basic-parameters").update({ last: firebase.firestore.FieldValue.increment(1) })
+            .catch(err => console.log('error in updateLast', err));
         }
 
         //COMPONENT: graph
@@ -45114,11 +45057,11 @@
             return this.db.doc("graph").onSnapshot(data => func(data));
         }
 
-        //COMPONENT: parameters
+        //COMPONENT: basic-parameters
         //legge solamente la collection basic-parameters
         readParameters(func) {
             this.db.doc("basic-parameters").get()
-                .catch(e => console.log('error in readGraph', e))
+                .catch(e => console.log('error in readParameters', e))
                 .then(res => {
                     var data = res.data();
                     func(data);
@@ -45136,10 +45079,42 @@
             return this.db.doc("basic-parameters").onSnapshot(data => func(data));
         }
 
-        //COMPONENT: stats
-
-        deleteOcject(name){
-            this.db.doc(name).delete()
+        //COMPONENT: cars
+        readCars(func) {
+            this.db.doc("cars").collection("inside").get()
+                .catch(e => console.log('error in readAll', e))
+                .then(res => {
+                    var data = [];
+                    res.docs.forEach(doc => {
+                        data.push(doc.data());
+                    });
+                    data.sort(
+                        function (a, b) {
+                            if (a.arrival < b.arrival) {
+                                return -1;
+                            }
+                            if (b.arrival < a.arrival) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                    );
+                    func(data);
+                });
+        } 
+        
+        uploadCar(name){
+            name=name.toString();
+            this.doc =this.db.doc("cars").collection("inside").doc(name);
+            this.doc.set({
+                arrival: Math.floor(new Date().getTime()/1000),
+            });
+        }
+        listenToChangesCars(func){
+            return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
+        }
+        deleteCar(name){
+            this.db.doc("cars").collection("inside").doc(name.toString()).delete()
             .catch(function(error) {
                 console.error("Error removing document: ", error);
             });
@@ -45225,7 +45200,7 @@
                     ]
                 },
                 options: {
-                    aspectRatio: 1.85,
+                    aspectRatio: 1.7,
                     responsive: true,
                     maintainAspectRatio: true,
                     scales: {
@@ -45233,7 +45208,7 @@
                                 beginAtZero:true,
                                 title: {
                                     display: true,
-                                    text: 'Tempo Medio di Percorrenza [min] ' 
+                                    text: 'Tempo Medio di Percorrenza [s] ' 
                                 }                   
                         }
                     }
@@ -45268,21 +45243,61 @@
                 maxCars: { type: Number },
                 occupationRate:{ type: Number },
                 expectedTime:{ type: Number },
-                travelTime:{type: Number}
+                travelTime:{type: Number},
             }
         }
         
         constructor() {
             super();
-            const carLength=4.6;
             this.carsInside=0;
             this.maxCars=0;
             this.occupationRate=0,
             this.expectedTime=0,
+            this.times=[0,0,0,0,0,0,0,0,0,0],
+            this.index=0,
             this.travelTime=0;
+            this.last=0;
+            this.first=0;
             this.firebaseQuery= new FirebaseQuery();
-            this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.maxCars=Math.floor(data.length/carLength), this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));}));
+            this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.updateProperties(data);}));
+            this.firebaseQuery.deleteCar("0");
 
+        }
+        updateProperties(data){
+            this.maxCars=Math.floor(data.length/4.6);//4.6m lunghezza media di un auto
+            this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));
+            this.carsInside=data.last-data.first;
+            this.occupationRate=Math.round(this.carsInside/this.maxCars*100);
+            if(this.first!=data.first){
+                var deleted=this.first;
+                this.first=data.first;
+                if(this.index==10){
+                    this.index=0;
+                }
+                this.firebaseQuery.readCars(data =>{this.calculateExpectedTime(data,deleted);});            
+            }
+            if(this.last!=data.last){
+                this.firebaseQuery.uploadCar(this.last);
+                this.last=data.last;
+            }
+        }
+
+        calculateExpectedTime(data,deleted){
+            this.firebaseQuery.deleteCar(deleted);        
+            if(this.index==10){
+                this.index=0;
+            }
+            this.times[this.index]=Math.floor(new Date().getTime()/1000)-data[0].arrival;
+            this.index=this.index+1;     
+            var expectedTime=0;
+            var n=0;
+            for (let i = 0; i < 10; i++) {
+                if(this.times[i]!=0){
+                    expectedTime += this.times[i];
+                    n++;
+                }
+            }
+            this.expectedTime=Math.round(expectedTime/n);
         }
 
         
@@ -45318,7 +45333,7 @@
                             <h1  class = " title is-3 has-text-left has-text-dark">Tasso di Occupazione</h1>
                         </div>
                         <div class = " column is-2 ">
-                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.occupationRate}</h1>
+                            <h1  class = " title is-3 has-text-centered has-text-dark">${this.occupationRate}%</h1>
                         </div>
                     </div>
                     <hr>
@@ -45339,10 +45354,19 @@
                             <h1  class = " title is-3 has-text-centered has-text-dark  ">${this.travelTime}</h1>
                         </div>
                     </div>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-5 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>first</button>
+                        </div>
+                        <div class = " column is-5 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>last</button>
+                        </div>
+                    </div>
                     <hr>
                     <parameters-component></parameters-component>
         `;
         }
+        
              
     }
 
@@ -45425,66 +45449,34 @@
 
     customElements.define('parameters-component', Parameters);
 
-    class RouterComponent extends HTMLElement {
-
+    class HomePage extends NavElement {
         constructor() {
             super();
-            this.routes = [
-                { path: '/', element: 'home-page' , description: "Home"},
-                //{ path: '/chart', element: 'chart-component' , description: "grafico" },
-                //{ path: '/clock' , element: 'clock-element' , description: "orologio"},
-                //{ path: '/remove-page' , element: 'remove-page' , description: "Elimina"},
-
-            ];
-
-            //aggiungo un listener per quando si preme i tasti avanti e indietro nel browser
-            window.addEventListener('popstate', () => this.navigate(document.location.pathname, false));
-            window.addEventListener('navigate', (e) => this.navigate(e.detail, true));
-            //chiamo navigate anche al primo avvio della pagina
-            this.navigate(document.location.pathname, true);
         }
-
-        //imposta a tutti i pulsanti con l'attributo route un listener a navigate
-        setListenerToActiveRoutes() {
-            let activeRoutes = Array.from(this.querySelectorAll('[route]'));
-            activeRoutes.forEach(activeRoute => {
-                activeRoute.addEventListener('click', () => {
-                    this.navigate(activeRoute.attributes.route.value, true);
-                });
-            });
+        
+        render() {
+            return p` 
+            <br>
+            <div class = " columns  is-centered is-full ">
+                <div class = " column is-3 ">
+                    <stats-component></stats-component>
+                </div> 
+                <div class = " column is-9 ">
+                    <h1  class = " title is-2 has-text-centered has-text-dark is-italic has-text-weight-bold ">GRAFICO</h1>
+                    <div class = " columns  is-centered is-full ">
+                        <div class = " column is-10 " style="width:70vw">
+                            <chart-component></chart-component>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        `;
         }
-
-        /*path è il percorso a cui si vuole andare, pushState indica se si deve fare il push nella history
-        pushState = false nel listener a popstate altrimenti tasto back non funziona*/
-        navigate(path, pushState) {
-            //ottengo la rotta corretta
-            let route = this.routes.find(item => item.path === path);
-            if (route) {
-                    //cambio la pagina a seconda del path
-                    const newElement = document.createElement(route.element);
-                    while (this.firstChild) {
-                        this.removeChild(this.firstChild);
-                    }
-                    this.appendChild(newElement);
-
-                    /*chiamo la funzione setListener solo dopo timeout di 0 ms,
-                    in caso contario non si rilevano <button>, perchè appendChild() asincrona                
-                    */
-                    setTimeout(() => {
-                        this.setListenerToActiveRoutes();
-                    }, 0);
-                    document.title = 'Galleria - ' + route.description;
-                    if (pushState) {
-                        history.pushState({}, '', route.path);
-                    }
-            }
-            else {
-                console.log ("ERROR 404 PAGE NOT FOUND");
-                this.navigate('/', true);
-            }
-        }
+             
     }
 
-    customElements.define('router-component', RouterComponent);
+
+    customElements.define('home-page', HomePage);
 
 })();

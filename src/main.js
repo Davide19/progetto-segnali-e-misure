@@ -1,2 +1,2 @@
 import './core/firebase-init';
-import './core/router.component';
+import './pages/home-page';

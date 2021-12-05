@@ -9,45 +9,24 @@ export class FirebaseQuery {
         this.db = firebase.firestore().collection("stats");
 
     }
-
     setName(name) {
+        this.doc =this.db.doc(name.toString())
+    }/*
+    uploadCar(name){
+        name=name.toString()
         this.doc =this.db.doc(name)
-    }
-
-    
-    
-    uploadItem(name){
-        name=name.toLowerCase()
-        this.setName(name)
         this.doc.set({
-            name: name,
             qta: "0",
             uid: "uid"
         })
+    }*/
+    updateFirst(){
+        this.db.doc("basic-parameters").update({ first: firebase.firestore.FieldValue.increment(1) })
+        .catch(err => console.log('error in updateFirst', err))
     }
-    
-    //restituisce tutti i documenti del database dentro un array
-    readAll(func) {
-        this.db.get()
-            .catch(e => console.log('error in readAll', e))
-            .then(res => {
-                var data = [];
-                res.docs.forEach(doc => {
-                    data.push(doc.data());
-                })
-                data.sort(
-                    function (a, b) {
-                        if (a.name < b.name) {
-                            return -1;
-                        }
-                        if (b.name < a.name) {
-                            return 1;
-                        }
-                        return 0;
-                    }
-                );
-                func(data);
-            });
+    updateLast(){
+        this.db.doc("basic-parameters").update({ last: firebase.firestore.FieldValue.increment(1) })
+        .catch(err => console.log('error in updateLast', err))
     }
 
     //COMPONENT: graph
@@ -66,11 +45,11 @@ export class FirebaseQuery {
         return this.db.doc("graph").onSnapshot(data => func(data));
     }
 
-    //COMPONENT: parameters
+    //COMPONENT: basic-parameters
     //legge solamente la collection basic-parameters
     readParameters(func) {
         this.db.doc("basic-parameters").get()
-            .catch(e => console.log('error in readGraph', e))
+            .catch(e => console.log('error in readParameters', e))
             .then(res => {
                 var data = res.data();
                 func(data);
@@ -88,10 +67,42 @@ export class FirebaseQuery {
         return this.db.doc("basic-parameters").onSnapshot(data => func(data));
     }
 
-    //COMPONENT: stats
-
-    deleteOcject(name){
-        this.db.doc(name).delete()
+    //COMPONENT: cars
+    readCars(func) {
+        this.db.doc("cars").collection("inside").get()
+            .catch(e => console.log('error in readAll', e))
+            .then(res => {
+                var data = [];
+                res.docs.forEach(doc => {
+                    data.push(doc.data());
+                })
+                data.sort(
+                    function (a, b) {
+                        if (a.arrival < b.arrival) {
+                            return -1;
+                        }
+                        if (b.arrival < a.arrival) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                );
+                func(data);
+            });
+    } 
+    
+    uploadCar(name){
+        name=name.toString()
+        this.doc =this.db.doc("cars").collection("inside").doc(name);
+        this.doc.set({
+            arrival: Math.floor(new Date().getTime()/1000),
+        })
+    }
+    listenToChangesCars(func){
+        return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
+    }
+    deleteCar(name){
+        this.db.doc("cars").collection("inside").doc(name.toString()).delete()
         .catch(function(error) {
             console.error("Error removing document: ", error);
         });

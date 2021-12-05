@@ -80,7 +80,7 @@ export class Graph extends NavElement {
                 ]
             },
             options: {
-                aspectRatio: 1.85,
+                aspectRatio: 1.7,
                 responsive: true,
                 maintainAspectRatio: true,
                 scales: {
@@ -88,7 +88,7 @@ export class Graph extends NavElement {
                             beginAtZero:true,
                             title: {
                                 display: true,
-                                text: 'Tempo Medio di Percorrenza [min] ' 
+                                text: 'Tempo Medio di Percorrenza [s] ' 
                             }                   
                     }
                 }
