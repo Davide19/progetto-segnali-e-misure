@@ -18,7 +18,8 @@ export class Parameters extends NavElement {
         this.firebaseQuery= new FirebaseQuery();
         this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.length=data.length, this.speedLimit=data.speedLimit}))
     }
-
+    //FIXME: sistema caricamento 
+    //permette di aggiornare i parametri della galleria
     updateParameters(){
         if(document.getElementById("length").value==""|| isNaN(parseInt(document.getElementById("length").value))){
             document.getElementById("length").classList.toggle("is-danger")
@@ -37,8 +38,7 @@ export class Parameters extends NavElement {
                 document.getElementById("speedLimit").classList.remove("is-danger")
                 document.getElementById("length").value="";
                 document.getElementById("speedLimit").value="";
-            }
-            
+            }            
         }
     }
     
@@ -71,9 +71,6 @@ export class Parameters extends NavElement {
                         </div>
                     </div>
         `;
-    }
-         
+    }         
 }
-
-
 customElements.define('parameters-component', Parameters);

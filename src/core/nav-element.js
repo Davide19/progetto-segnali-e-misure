@@ -1,5 +1,4 @@
 import { LitElement, html } from 'lit-element';
-
 export { html };
 export class NavElement extends LitElement {
 
@@ -13,5 +12,4 @@ export class NavElement extends LitElement {
     createRenderRoot() {
         return this;
     }
-
 }

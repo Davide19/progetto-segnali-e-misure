@@ -1,13 +1,10 @@
 import { html } from 'lit-element';
 import { NavElement } from '../core/nav-element';
-
 import '../pages/home-page';
 import '../pages/clock-component';
 import '../pages/chart-component';
 import '../pages/stats-component';
 import '../pages/parameters-component';
-
-
 export class HomePage extends NavElement {
     constructor() {
         super();
@@ -28,12 +25,8 @@ export class HomePage extends NavElement {
                         </div>
                     </div>
                 </div>
-            </div>
-            
+            </div>            
         `;
-    }
-         
+    }         
 }
-
-
 customElements.define('home-page', HomePage);

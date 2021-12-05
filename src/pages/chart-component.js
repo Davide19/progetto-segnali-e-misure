@@ -2,8 +2,6 @@ import { html } from 'lit-element';
 import { NavElement } from '../core/nav-element';
 import Chart from 'chart.js/auto';
 import { FirebaseQuery } from '../core/firebase-query';
-
-
 export class Graph extends NavElement {
     
     constructor() {
@@ -15,6 +13,8 @@ export class Graph extends NavElement {
         this.myChart;
                
     }
+
+    //aggiorna i valori del grafico ad ogni variazione nel database
       aggiorna(control) {
         const ctx ='myChart';
         if(control){
@@ -101,16 +101,6 @@ export class Graph extends NavElement {
             <canvas id="myChart"></canvas>
 
         `;
-    }
-    /*
-    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-5 ">
-                            <button class="button is-dark is-normal" @click=${e => this.aggiorna()}>CFERMA</button>
-                        </div>
-            </div>
-            */
-         
+    }        
 }
-
-
 customElements.define('chart-component', Graph);

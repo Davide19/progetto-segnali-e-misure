@@ -32025,24 +32025,38 @@
         constructor() {
             super();
             this.attachShadow({mode: 'open'});
+            //intervallo di aggiornamento dell'orologio
             setInterval(() => {
               this.date = new Date();
             }, 1000);      
           }
-        
+        //forza il render della pagina invalidando la data precedente
+        async invalidate() {
+          if (!this.needsRender) {
+            this.needsRender = true;      
+            this.needsRender = await false;
+            w(this.render(), this.shadowRoot);
+          }
+        }
+           
         get date() { return this._date; }
         set date(v) { this._date = v; this.invalidate(); }
-
+        
+        //restituisce la stringa col giorno della settimana
         day(n){
             const weekday = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
             return weekday[n];
         }
+
+        //aggiunge uno zero ad un valore se minore di 10
         time(n){
             if(n<10)
                 return "0"+n;
             else
                 return n;
         }
+
+        //calcola la datanel formato giorno gg/mm/aaaa h:min:s
         finalDate(){
             var final=this.day(this.date.getDay())+" "+this.date.getDate()+"/"+(this.date.getMonth()+1)+"/"+this.date.getFullYear()+" "+this.time(this.date.getHours())+":"+this.time(this.date.getMinutes())+":"+this.time(this.date.getSeconds());
             return final;
@@ -32053,17 +32067,7 @@
         <h1 style="font-size: 2.5vh; font-weight: 600; color: #363636 !important; text-align:center;">${this.finalDate()}</h1>       
       `;
         }
-
-        async invalidate() {
-          if (!this.needsRender) {
-            this.needsRender = true;      
-            this.needsRender = await false;
-            w(this.render(), this.shadowRoot);
-          }
-        }
     }
-
-
     customElements.define('clock-component', Clock);
 
     /*!
@@ -45019,9 +45023,8 @@
 
         constructor() {
             this.db = firebase.firestore().collection("stats");
-
         }
-
+        //FIXME: elimina le due funzioni dopo la fase test
         updateFirst(){
             this.db.doc("basic-parameters").update({ first: firebase.firestore.FieldValue.increment(1) })
             .catch(err => console.log('error in updateFirst', err));
@@ -45042,6 +45045,7 @@
                 });
         }
 
+        //permette di aggiornare selettivamente i parametri del grafico nella fascia d'orario corrente
         updateGraph(travelTime){
             var date=new Date();
             if (date.getHours()>=0 && date.getHours()<=5 ){
@@ -45141,10 +45145,6 @@
                 }            
             }
         }
-
-
-
-
         /*esegue una callback ad ogni cambiamento del documento
             ma ritorna se stessa per poter rimuovere il listener*/
         listenToChangesGraph(func){
@@ -45161,7 +45161,7 @@
                     func(data);
                 });
         }
-
+        //aggiorna il campo (name) della collectiion basic-parameters con value
         updateParameters(name, value){
             this.db.doc("basic-parameters").update(name, value)
             .catch(err => console.log('error in updateParameters', err));
@@ -45174,6 +45174,7 @@
         }
 
         //COMPONENT: cars
+        //legge solamente la collection cars e la ordina in base al tempo di arrivo
         readCars(func) {
             this.db.doc("cars").collection("inside").get()
                 .catch(e => console.log('error in readAll', e))
@@ -45196,7 +45197,8 @@
                     func(data);
                 });
         } 
-        
+
+        //inserisce nel database il documento relativo ad un'auto e il suo tempo d'arrivo
         uploadCar(name){
             name=name.toString();
             this.doc =this.db.doc("cars").collection("inside").doc(name);
@@ -45204,18 +45206,20 @@
                 arrival: Math.floor(new Date().getTime()/1000),
             });
         }
-        listenToChangesCars(func){
-            return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
-        }
+
+        //elimina un'auto dalla collection
         deleteCar(name){
             this.db.doc("cars").collection("inside").doc(name.toString()).delete()
             .catch(function(error) {
                 console.error("Error removing document: ", error);
             });
         }
-        
 
-        
+         /*esegue una callback ad ogni cambiamento del documento
+            ma ritorna se stessa per poter rimuovere il listener*/
+        listenToChangesCars(func){
+            return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
+        }    
     }
 
     class Graph extends NavElement {
@@ -45229,6 +45233,8 @@
             this.myChart;
                    
         }
+
+        //aggiorna i valori del grafico ad ogni variazione nel database
           aggiorna(control) {
             const ctx ='myChart';
             if(control){
@@ -45315,15 +45321,7 @@
             <canvas id="myChart"></canvas>
 
         `;
-        }
-        /*
-        <div class = " columns  is-centered is-full ">
-                            <div class = " column is-5 ">
-                                <button class="button is-dark is-normal" @click=${e => this.aggiorna()}>CFERMA</button>
-                            </div>
-                </div>
-                */
-             
+        }        
     }
 
 
@@ -45354,9 +45352,10 @@
             this.first=0;
             this.firebaseQuery= new FirebaseQuery();
             this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.updateProperties(data);}));
-            //this.firebaseQuery.deleteCar("0");
-
         }
+
+        //aggiorna le priprietà dell'interfaccia grafica
+        //gestisce l'arrivo e la partenza delle auto
         updateProperties(data){
             this.maxCars=Math.floor(data.length/4.6);//4.6m lunghezza media di un auto
             this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));
@@ -45383,6 +45382,9 @@
             
         }
 
+        //rimuove l'ultima auto (inserito qua per evitare problemi con l'asincronicità delle operazioni sul database)
+        //aggiorna i valori relativi al grafico
+        //calcola il tempo medio di percorrenza (tenendo conto degli ultimi 10 veicoli) e aggiorna questo valore nel database
         calculateExpectedTime(data,deleted){
             this.firebaseQuery.deleteCar(deleted);
             if(this.index==10){
@@ -45400,8 +45402,8 @@
                 }
             }
             this.expectedTime=Math.round(expectedTime/n);
+            this.firebaseQuery.updateParameters("average_time", this.expectedTime);
         }
-
         
         render() {
             return p`  
@@ -45467,12 +45469,8 @@
                     <hr>
                     <parameters-component></parameters-component>
         `;
-        }
-        
-             
+        }         
     }
-
-
     customElements.define('stats-component', Stats);
 
     class Parameters extends NavElement {
@@ -45491,7 +45489,8 @@
             this.firebaseQuery= new FirebaseQuery();
             this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.length=data.length, this.speedLimit=data.speedLimit;}));
         }
-
+        //FIXME: sistema caricamento 
+        //permette di aggiornare i parametri della galleria
         updateParameters(){
             if(document.getElementById("length").value==""|| isNaN(parseInt(document.getElementById("length").value))){
                 document.getElementById("length").classList.toggle("is-danger");
@@ -45544,11 +45543,8 @@
                         </div>
                     </div>
         `;
-        }
-             
+        }         
     }
-
-
     customElements.define('parameters-component', Parameters);
 
     class HomePage extends NavElement {
@@ -45571,14 +45567,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            
+            </div>            
         `;
-        }
-             
+        }         
     }
-
-
     customElements.define('home-page', HomePage);
 
 })();

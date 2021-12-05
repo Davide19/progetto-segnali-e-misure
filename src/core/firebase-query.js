@@ -1,15 +1,13 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-
-
 export class FirebaseQuery {
 
     constructor() {
         this.db = firebase.firestore().collection("stats");
-
     }
 
+    //FIXME: elimina le due funzioni dopo la fase test
     updateFirst(){
         this.db.doc("basic-parameters").update({ first: firebase.firestore.FieldValue.increment(1) })
         .catch(err => console.log('error in updateFirst', err))
@@ -30,6 +28,7 @@ export class FirebaseQuery {
             });
     }
 
+    //permette di aggiornare selettivamente i parametri del grafico nella fascia d'orario corrente
     updateGraph(travelTime){
         var date=new Date()
         if (date.getHours()>=0 && date.getHours()<=5 ){
@@ -130,9 +129,6 @@ export class FirebaseQuery {
         }
     }
 
-
-
-
     /*esegue una callback ad ogni cambiamento del documento
         ma ritorna se stessa per poter rimuovere il listener*/
     listenToChangesGraph(func){
@@ -149,7 +145,8 @@ export class FirebaseQuery {
                 func(data);
             });
     }
-
+    
+    //aggiorna il campo (name) della collectiion basic-parameters con value
     updateParameters(name, value){
         this.db.doc("basic-parameters").update(name, value)
         .catch(err => console.log('error in updateParameters', err))
@@ -162,6 +159,7 @@ export class FirebaseQuery {
     }
 
     //COMPONENT: cars
+    //legge solamente la collection cars e la ordina in base al tempo di arrivo
     readCars(func) {
         this.db.doc("cars").collection("inside").get()
             .catch(e => console.log('error in readAll', e))
@@ -184,7 +182,8 @@ export class FirebaseQuery {
                 func(data);
             });
     } 
-    
+
+    //inserisce nel database il documento relativo ad un'auto e il suo tempo d'arrivo
     uploadCar(name){
         name=name.toString()
         this.doc =this.db.doc("cars").collection("inside").doc(name);
@@ -192,16 +191,18 @@ export class FirebaseQuery {
             arrival: Math.floor(new Date().getTime()/1000),
         })
     }
-    listenToChangesCars(func){
-        return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
-    }
+
+    //elimina un'auto dalla collection
     deleteCar(name){
         this.db.doc("cars").collection("inside").doc(name.toString()).delete()
         .catch(function(error) {
             console.error("Error removing document: ", error);
         });
     }
-    
 
-    
+     /*esegue una callback ad ogni cambiamento del documento
+        ma ritorna se stessa per poter rimuovere il listener*/
+    listenToChangesCars(func){
+        return this.db.doc("cars").collection("inside").onSnapshot(data => func(data));
+    }    
 }

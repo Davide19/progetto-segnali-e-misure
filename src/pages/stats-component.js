@@ -1,7 +1,6 @@
 import { html } from 'lit-element';
 import { NavElement } from '../core/nav-element';
 import { FirebaseQuery } from '../core/firebase-query';
-
 export class Stats extends NavElement {
      
     static get properties() {
@@ -27,9 +26,10 @@ export class Stats extends NavElement {
         this.first=0
         this.firebaseQuery= new FirebaseQuery();
         this.firebaseQuery.listenToChangesParameters(e => this.firebaseQuery.readParameters(data =>{this.updateProperties(data)}))
-        //this.firebaseQuery.deleteCar("0");
-
     }
+
+    //aggiorna le priprietà dell'interfaccia grafica
+    //gestisce l'arrivo e la partenza delle auto
     updateProperties(data){
         this.maxCars=Math.floor(data.length/4.6);//4.6m lunghezza media di un auto
         this.travelTime=Math.ceil(data.length/(data.speedLimit/3.6));
@@ -52,10 +52,12 @@ export class Stats extends NavElement {
             }
             else{
                 this.last=data.last;
-            }
-        
+            }        
     }
 
+    //rimuove l'ultima auto (inserito qua per evitare problemi con l'asincronicità delle operazioni sul database)
+    //aggiorna i valori relativi al grafico
+    //calcola il tempo medio di percorrenza (tenendo conto degli ultimi 10 veicoli) e aggiorna questo valore nel database
     calculateExpectedTime(data,deleted){
         this.firebaseQuery.deleteCar(deleted);
         if(this.index==10){
@@ -73,8 +75,8 @@ export class Stats extends NavElement {
             }
         }
         this.expectedTime=Math.round(expectedTime/n);
+        this.firebaseQuery.updateParameters("average_time", this.expectedTime);
     }
-
     
     render() {
         return html`  
@@ -140,10 +142,6 @@ export class Stats extends NavElement {
                     <hr>
                     <parameters-component></parameters-component>
         `;
-    }
-    
-         
+    }         
 }
-
-
 customElements.define('stats-component', Stats);
