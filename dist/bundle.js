@@ -45389,7 +45389,7 @@
             if(this.index==10){
                 this.index=0;
             }
-            this.times[this.index]=Math.floor((new Date().getTime()-data[0].arrival)/1000);
+            this.times[this.index]=Math.round((new Date().getTime()/1000-data[0].arrival));
             this.firebaseQuery.updateGraph(this.times[this.index]);
             this.index=this.index+1;     
             var expectedTime=0;
@@ -45529,10 +45529,10 @@
                     <hr>
                     <div class = " columns  is-centered is-full ">
                         <div class = " column is-3 ">
-                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>Entra</button>
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>Entra</button>
                         </div>
                         <div class = " column is-3 ">
-                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>Esce</button>
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>Esce</button>
                         </div>
                         <div class = " column is-4 ">
                             <button class="button is-dark is-normal" @click=${e => this.updateParameters()}>CONFERMA</button>
