@@ -64,9 +64,15 @@ export class Parameters extends NavElement {
                             <input class="input has-text-centered is-dark" id="speedLimit" type="text" placeholder=${this.speedLimit}>                  
                         </div>
                     </div>
-                    <hr> 
+                    <hr>
                     <div class = " columns  is-centered is-full ">
-                        <div class = " column is-5 ">
+                        <div class = " column is-3 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>Entra</button>
+                        </div>
+                        <div class = " column is-3 ">
+                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>Esce</button>
+                        </div>
+                        <div class = " column is-4 ">
                             <button class="button is-dark is-normal" @click=${e => this.updateParameters()}>CONFERMA</button>
                         </div>
                     </div>

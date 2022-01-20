@@ -63,7 +63,7 @@ export class Stats extends NavElement {
         if(this.index==10){
             this.index=0;
         }
-        this.times[this.index]=Math.floor(new Date().getTime()/1000)-data[0].arrival
+        this.times[this.index]=Math.floor((new Date().getTime()-data[0].arrival)/1000)
         this.firebaseQuery.updateGraph(this.times[this.index])
         this.index=this.index+1;     
         var expectedTime=0
@@ -129,14 +129,6 @@ export class Stats extends NavElement {
                         </div>
                         <div class = " column is-2 ">
                             <h1  class = " title is-3 has-text-centered has-text-dark  ">${this.travelTime}</h1>
-                        </div>
-                    </div>
-                    <div class = " columns  is-centered is-full ">
-                        <div class = " column is-5 ">
-                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateFirst()}>first</button>
-                        </div>
-                        <div class = " column is-5 ">
-                            <button class="button is-dark is-normal" @click=${e => this.firebaseQuery.updateLast()}>last</button>
                         </div>
                     </div>
                     <hr>
