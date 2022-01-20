@@ -45389,7 +45389,7 @@
             if(this.index==10){
                 this.index=0;
             }
-            this.times[this.index]=Math.round((new Date().getTime()/1000-data[0].arrival));
+            this.times[this.index]=Math.round((new Date().getTime()/1000-data[0].arrival)*5); //*5 in modo da ottenere tempi scalati in maniera corretta
             this.firebaseQuery.updateGraph(this.times[this.index]);
             this.index=this.index+1;     
             var expectedTime=0;
